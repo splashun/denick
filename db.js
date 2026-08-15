@@ -15,7 +15,7 @@ function buildPool() {
 
   const pool = new Pool({
     connectionString,
-    ssl: { rejectUnauthorized: true },
+    ssl: { rejectUnauthorized: false },
   });
 
   pool.on('error', (err) => {
