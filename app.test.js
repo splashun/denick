@@ -55,3 +55,14 @@ test('GET /health reports service status', async () => {
   assert.equal(response.status, 200);
   assert.deepEqual(response.body, { status: 'ok' });
 });
+
+test('GET /missing returns a 404 response', async () => {
+  const app = createApp({
+    query: async () => ({ rows: [] }),
+  });
+
+  const response = await request(app, '/missing');
+
+  assert.equal(response.status, 404);
+  assert.deepEqual(response.body, { error: 'Not found' });
+});

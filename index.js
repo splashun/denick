@@ -90,7 +90,7 @@ function createApp(database = pool) {
         }
     });
     
-    app.all('*', (req, res) => {
+    app.use((req, res) => {
         res.status(404).json({ error: 'Not found' });
     });
 
