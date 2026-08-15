@@ -12,103 +12,107 @@ const USAGE_MESSAGE = { message: 'Usage: /denick/{nick}' };
 const mcNameRegex = /^[a-zA-Z0-9_]{1,16}$/;
 
 function createApp(database = pool) {
-  const app = express();
+    const app = express();
 
-  app.use(helmet());
-  app.use(express.json({ limit: '1mb' }));
-  // Rate limit: 100 requests per 60 seconds (1 minute)
-  app.use(
-    rateLimit({
-      windowMs: 60 * 1000,
-      max: 100,
-      standardHeaders: true,
-      legacyHeaders: false,
-    })
-  );
+    app.use(helmet());
+    app.use(express.json({ limit: '1mb' }));
+    // Rate limit: 100 requests per 60 seconds (1 minute)
+    app.use(
+        rateLimit({
+            windowMs: 60 * 1000,
+            max: 100,
+            standardHeaders: true,
+            legacyHeaders: false,
+        })
+    );
 
-  app.get('/health', async (req, res) => {
-    try {
-      await database.query('SELECT 1');
-      return res.status(200).json({ status: 'ok' });
-    } catch (error) {
-      console.error('Health check failed:', error);
-      return res.status(503).json({ status: 'unavailable' });
-    }
-  });
+    app.get('/', (req, res) => {
+        res.status(200).json({ message: 'bello' });
+    });
 
-  app.get('/denick', (req, res) => {
-    res.status(200).json(USAGE_MESSAGE);
-  });
+    app.get('/health', async (req, res) => {
+        try {
+            await database.query('SELECT 1');
+            return res.status(200).json({ status: 'ok' });
+        } catch (error) {
+            console.error('Health check failed:', error);
+            return res.status(503).json({ status: 'unavailable' });
+        }
+    });
 
-  app.get('/denick/:nick', async (req, res) => {
-    const nick = req.params.nick?.trim();
+    app.get('/denick', (req, res) => {
+        res.status(200).json(USAGE_MESSAGE);
+    });
 
-    if (!nick) {
-      return res.status(400).json({ error: 'Nick is required' });
-    }
+    app.get('/denick/:nick', async (req, res) => {
+        const nick = req.params.nick?.trim();
 
-    if (!mcNameRegex.test(nick)) {
-      return res.status(400).json({ error: 'Invalid nickname format' });
-    }
+        if (!nick) {
+            return res.status(400).json({ error: 'Nick is required' });
+        }
 
-    // Serve from cache when possible
-    const cached = cache.get(nick);
-    if (cached) {
-      return res.status(200).json({
-        nick,
-        realName: cached.realName,
-        realUuid: cached.realUuid,
-      });
-    }
+        if (!mcNameRegex.test(nick)) {
+            return res.status(400).json({ error: 'Invalid nickname format' });
+        }
 
-    try {
-      console.log(`Searching for nick: ${nick}`);
-      const result = await database.query(
-        'SELECT real_name, real_uuid FROM nicks WHERE nickname = $1',
-        [nick]
-      );
+        // Serve from cache when possible
+        const cached = cache.get(nick);
+        if (cached) {
+            return res.status(200).json({
+                nick,
+                realName: cached.realName,
+                realUuid: cached.realUuid,
+            });
+        }
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Nick not found' });
-      }
+        try {
+            console.log(`Searching for nick: ${nick}`);
+            const result = await database.query(
+                'SELECT real_name, real_uuid FROM nicks WHERE nickname = $1',
+                [nick]
+            );
 
-      const { real_name, real_uuid } = result.rows[0];
-      cache.set(nick, { realName: real_name, realUuid: real_uuid });
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: 'Nick not found' });
+            }
 
-      return res.status(200).json({
-        nick,
-        realName: real_name,
-        realUuid: real_uuid,
-      });
-    } catch (error) {
-      console.error('Database error:', error);
-      return res.status(500).json({ error: 'Database error' });
-    }
-  });
+            const { real_name, real_uuid } = result.rows[0];
+            cache.set(nick, { realName: real_name, realUuid: real_uuid });
 
-  return app;
+            return res.status(200).json({
+                nick,
+                realName: real_name,
+                realUuid: real_uuid,
+            });
+        } catch (error) {
+            console.error('Database error:', error);
+            return res.status(500).json({ error: 'Database error' });
+        }
+    });
+
+    return app;
 }
 
 if (require.main === module) {
-  const app = createApp();
-  const server = app.listen(DEFAULT_PORT, async () => {
-    console.log(`diddy http://localhost:${DEFAULT_PORT}`);
-    await listener.init();
-  });
-
-  const shutdown = async () => {
-    console.log('Shutting down gracefully...');
-    server.close(async () => {
-      await listener.close();
-      if (pool && typeof pool.end === 'function') {
-        await pool.end();
-      }
-      process.exit(0);
+    const app = createApp();
+    const server = app.listen(DEFAULT_PORT, async () => {
+        console.log(`diddy http://localhost:${DEFAULT_PORT}`);
+        await listener.init();
     });
-  };
 
-  process.on('SIGINT', shutdown);
-  process.on('SIGTERM', shutdown);
+    const shutdown = async () => {
+        console.log('Shutting down gracefully...');
+        server.close(async () => {
+            await listener.close();
+            if (pool && typeof pool.end === 'function') {
+                await pool.end();
+            }
+            process.exit(0);
+        });
+    };
+
+    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', shutdown);
 }
 
 module.exports = { createApp };
