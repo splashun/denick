@@ -6,7 +6,7 @@ const cache = require('./cache.js');
 const listener = require('./listener.js');
 
 const DEFAULT_PORT = Number(process.env.PORT) || 8080;
-const USAGE_MESSAGE = { message: 'Usage: /denick/{nick}' };
+const USAGE_MESSAGE = { message: 'Usage: /denick?nick={nick}' };
 
 // 1 to 16 chars; letters, numbers, underscores
 const mcNameRegex = /^[a-zA-Z0-9_]{1,16}$/;
@@ -40,15 +40,11 @@ function createApp(database = pool) {
         }
     });
 
-    app.get('/denick', (req, res) => {
-        res.status(200).json(USAGE_MESSAGE);
-    });
-
-    app.get('/denick/:nick', async (req, res) => {
-        const nick = req.params.nick?.trim();
+    app.get('/denick', async (req, res) => {
+        const nick = req.query.nick?.trim();
 
         if (!nick) {
-            return res.status(400).json({ error: 'Nick is required' });
+            return res.status(200).json(USAGE_MESSAGE);
         }
 
         if (!mcNameRegex.test(nick)) {
@@ -73,7 +69,7 @@ function createApp(database = pool) {
             );
 
             if (result.rows.length === 0) {
-                return res.status(404).json({ error: 'Nick not found' });
+                return res.status(404).json({ error: 'Nickname not found' });
             }
 
             const { real_name, real_uuid } = result.rows[0];
@@ -91,7 +87,7 @@ function createApp(database = pool) {
     });
     
     app.use((req, res) => {
-        res.status(404).json({ error: 'Not found' });
+        res.status(404).json({ error: 'Resource not found' });
     });
 
     return app;

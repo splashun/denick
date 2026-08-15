@@ -22,7 +22,7 @@ async function request(app, path, options = {}) {
   });
 }
 
-test('GET /denick/:nick uses a parameterized SQL query', async () => {
+test('GET /denick?nick= uses a parameterized SQL query', async () => {
   const calls = [];
   const app = createApp({
     query: async (sql, params) => {
@@ -33,7 +33,7 @@ test('GET /denick/:nick uses a parameterized SQL query', async () => {
     },
   });
 
-  const response = await request(app, '/denick/Steve');
+  const response = await request(app, '/denick?nick=Steve');
 
   assert.equal(response.status, 200);
   assert.deepEqual(calls[0].params, ['Steve']);

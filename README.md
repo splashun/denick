@@ -40,11 +40,11 @@ npm start
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/denick/:nick` | Lookup real player name and UUID by nickname |
+| `GET` | `/denick?nick={nick}` | Lookup real player name and UUID by nickname |
 | `GET` | `/health` | Health check (checks DB connection) |
 | `GET` | `/` | API status check |
 
-### Example Response (`GET /denick/thealfie381`)
+### Example Response (`GET /denick?nick=thealfie381`)
 ```json
 {
   "nick": "thealfie381",
