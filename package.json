@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/splashun/denick/issues"
   },
-  "homepage": "https://github.com/splashun/denick#readme",
+  "homepage": "https://hy.star.lat",
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
