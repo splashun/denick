@@ -1,0 +1,32 @@
+{
+  "name": "denick",
+  "version": "1.0.0",
+  "description": "Nickname lookup API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "node --test",
+    "lint": "node --check index.js && node --check db.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/splashun/denick.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/splashun/denick/issues"
+  },
+  "homepage": "https://github.com/splashun/denick#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^8.3.0",
+    "lru-cache": "^11.5.2",
+    "pg": "^8.23.0"
+  }
+}
