@@ -27,7 +27,7 @@ function createApp(database = pool) {
     );
 
     app.get('/', (req, res) => {
-        res.status(200).json({ message: 'the db will have entries at some point lol' }, { meantimeEntertainment: 'https://www.coolmathgames.com/0-papas-freezeria' });
+        res.status(200).json({ message: 'the db will have entries at some point lol', meantimeEntertainment: 'https://www.coolmathgames.com/0-papas-freezeria' });
     });
 
     app.get('/health', async (req, res) => {
