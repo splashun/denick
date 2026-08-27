@@ -69,7 +69,7 @@ function createApp(database = pool) {
             );
 
             if (result.rows.length === 0) {
-                return res.status(404).json({ error: 'Nickname not found' });
+                return res.status(404).json({ error: `Nickname ${nick} not found` });
             }
 
             const { real_name, real_uuid } = result.rows[0];
