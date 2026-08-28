@@ -26,12 +26,10 @@ BEGIN
 
   IF TG_OP = 'UPDATE' THEN
     PERFORM pg_notify('nick_updates', OLD.nickname);
-    PERFORM pg_notify('nick_updates', NEW.nickname);
     RETURN NEW;
   END IF;
 
   -- INSERT
-  PERFORM pg_notify('nick_updates', NEW.nickname);
   RETURN NEW;
 END;
 $$;
@@ -42,3 +40,4 @@ CREATE TRIGGER trg_nick_change
   AFTER INSERT OR UPDATE OR DELETE ON nicks
   FOR EACH ROW
   EXECUTE FUNCTION notify_nick_change();
+  

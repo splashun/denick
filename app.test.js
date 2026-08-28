@@ -28,7 +28,7 @@ test('GET /denick?nick= uses a parameterized SQL query', async () => {
     query: async (sql, params) => {
       calls.push({ sql, params });
       return {
-        rows: [{ real_name: 'Steve Rogers', real_uuid: 42 }],
+        rows: [{ real_name: 'Steve Rogers', real_uuid: '00000000-0000-0000-0000-000000000042' }],
       };
     },
   });
@@ -41,7 +41,7 @@ test('GET /denick?nick= uses a parameterized SQL query', async () => {
   assert.deepEqual(response.body, {
     nick: 'Steve',
     realName: 'Steve Rogers',
-    realUuid: 42,
+    realUuid: '00000000-0000-0000-0000-000000000042',
   });
 });
 
@@ -64,5 +64,5 @@ test('GET /missing returns a 404 response', async () => {
   const response = await request(app, '/missing');
 
   assert.equal(response.status, 404);
-  assert.deepEqual(response.body, { error: 'Not found' });
+  assert.deepEqual(response.body, { error: 'Resource not found' });
 });

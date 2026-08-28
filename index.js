@@ -67,7 +67,8 @@ function createApp(database = pool) {
                 'SELECT real_name, real_uuid FROM nicks WHERE nickname = $1',
                 [nick]
             );
-
+            console.log(`Database query result for nick ${nick}:`, result.rows);
+            console.log(`Number of rows returned: ${result.rows.length}`);
             if (result.rows.length === 0) {
                 return res.status(404).json({ error: `Nickname ${nick} not found` });
             }
