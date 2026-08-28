@@ -1,6 +1,6 @@
 # Denick
 
-A lightweight Hypixel nickname lookup API built with Express and PostgreSQL. BYODB 🤢
+A Hypixel nickname lookup API (denick) built with Express and PostgreSQL. BYODB 🤢
 
 ---
 
